@@ -17,7 +17,7 @@ foreach(
 	$oref = $_;
 	$aref = $bref = undef;
 	eval q{
-		use Lexical::Sub foo => $oref;
+		use Lexical::Sub::Patched foo => $oref;
 		$aref = \&foo;
 		$bref = \&foo;
 	};

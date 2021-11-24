@@ -1,11 +1,11 @@
 =head1 NAME
 
-Lexical::Sub - subroutines without namespace pollution
+Lexical::Sub::Patched - subroutines without namespace pollution
 
 =head1 SYNOPSIS
 
-	use Lexical::Sub quux => sub { $_[0] + 1 };
-	use Lexical::Sub carp => \&Carp::carp;
+	use Lexical::Sub::Patched quux => sub { $_[0] + 1 };
+	use Lexical::Sub::Patched carp => \&Carp::carp;
 
 =head1 DESCRIPTION
 
@@ -17,7 +17,7 @@ This module influences the meaning of single-part subroutine names that
 appear directly in code, such as "C<&foo>" and "C<foo(123)>".
 Normally, in the absence of
 any particular declaration, these would refer to the subroutine of that
-name located in the current package.  A C<Lexical::Sub> declaration
+name located in the current package.  A C<Lexical::Sub::Patched> declaration
 can change this to refer to any particular subroutine, bypassing the
 package system entirely.  A subroutine name that includes an explicit
 package part, such as "C<&main::foo>", always refers to the subroutine
@@ -36,38 +36,38 @@ lexical scoping that the C<my>, C<our>, and C<state> keywords supply.
 These lexical definitions propagate into string C<eval>s, on Perl versions
 that support it (5.9.3 and later).
 
-This module is implemented through the mechanism of L<Lexical::Var>.
+This module is implemented through the mechanism of L<Lexical::Var::Patched>.
 Its distinct name and declaration syntax exist to make lexical subroutine
 declarations clearer.
 
 =cut
 
-package Lexical::Sub;
+package Lexical::Sub::Patched;
 
 { use 5.006; }
 use warnings;
 use strict;
 
-our $VERSION = "0.009";
+our $VERSION = "0.010";
 
-require Lexical::Var;
-die "mismatched versions of Lexical::Var and Lexical::Sub modules"
-	unless $Lexical::Var::VERSION eq $VERSION;
+require Lexical::Var::Patched;
+die "mismatched versions of Lexical::Var::Patched and Lexical::Sub::Patched modules"
+	unless $Lexical::Var::Patched::VERSION eq $VERSION;
 
 =head1 PACKAGE METHODS
 
-These methods are meant to be invoked on the C<Lexical::Sub> package.
+These methods are meant to be invoked on the C<Lexical::Sub::Patched> package.
 
 =over
 
-=item Lexical::Sub->import(NAME => REF, ...)
+=item Lexical::Sub::Patched->import(NAME => REF, ...)
 
 Sets up lexical subroutine declarations, in the lexical environment that
 is currently compiling.  Each I<NAME> must be a bare subroutine name
 (e.g., "B<foo>"), and each I<REF> must be a reference to a subroutine.
 The name is lexically associated with the referenced subroutine.
 
-=item Lexical::Sub->unimport(NAME [=> REF], ...)
+=item Lexical::Sub::Patched->unimport(NAME [=> REF], ...)
 
 Sets up negative lexical subroutine declarations, in the lexical
 environment that is currently compiling.  Each I<NAME> must be a bare
@@ -125,7 +125,7 @@ cause this problem.
 =head1 SEE ALSO
 
 L<Lexical::Import>,
-L<Lexical::Var>
+L<Lexical::Var::Patched>
 
 =head1 AUTHOR
 

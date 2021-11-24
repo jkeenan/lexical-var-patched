@@ -1,2 +1,2 @@
-"Lexical::Var"->import('$t4' => \123);
+"Lexical::Var::Patched"->import('$t4' => \123);
 1;

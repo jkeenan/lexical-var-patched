@@ -1,3 +1,3 @@
 use strict;
-no Lexical::Var '$foo';
+no Lexical::Var::Patched '$foo';
 1;

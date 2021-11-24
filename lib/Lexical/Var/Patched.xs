@@ -130,7 +130,7 @@ static SV *THX_newSV_type(pTHX_ svtype type)
  * This function generate op that evaluates to a fixed object identity
  * and can also participate in constant folding.
  *
- * Lexical::Var generally needs to make ops that evaluate to fixed
+ * Lexical::Var::Patched generally needs to make ops that evaluate to fixed
  * identities, that being what a name that it handles represents.
  * Normally it can do this by means of an rv2xv op applied to a const op,
  * where the const op holds an RV that references the object of interest.
@@ -189,10 +189,10 @@ static OP *THX_gen_const_identity_op(pTHX_ SV *sv)
  * %^H key names
  */
 
-#define KEYPREFIX "Lexical::Var/"
+#define KEYPREFIX "Lexical::Var::Patched/"
 #define KEYPREFIXLEN (sizeof(KEYPREFIX)-1)
 
-#define LEXPADPREFIX "Lexical::Var::<LEX>"
+#define LEXPADPREFIX "Lexical::Var::Patched::<LEX>"
 #define LEXPADPREFIXLEN (sizeof(LEXPADPREFIX)-1)
 
 #define CHAR_IDSTART 0x01
@@ -333,7 +333,7 @@ static OP *THX_ck_rv2xv(pTHX_ OP *o, char sigil, OP *(*nxck)(pTHX_ OP *o))
 			 */
 			hintref = HeVAL(he);
 			if(!SvROK(hintref))
-				croak("non-reference hint for Lexical::Var");
+				croak("non-reference hint for Lexical::Var::Patched");
 			referent = SvREFCNT_inc(SvRV(hintref));
 			type = o->op_type;
 			flags = o->op_flags | (((U16)o->op_private) << 8);
@@ -619,7 +619,7 @@ static void THX_unimport(pTHX_ char base_sigil, char const *vari_word)
 	}
 }
 
-MODULE = Lexical::Var PACKAGE = Lexical::Var
+MODULE = Lexical::Var::Patched PACKAGE = Lexical::Var::Patched
 
 PROTOTYPES: DISABLE
 
@@ -662,7 +662,7 @@ PPCODE:
 	unimport('N', "variable");
 	SPAGAIN;
 
-MODULE = Lexical::Var PACKAGE = Lexical::Sub
+MODULE = Lexical::Var::Patched PACKAGE = Lexical::Sub::Patched
 
 SV *
 _sub_for_compilation(SV *classname, SV *name)

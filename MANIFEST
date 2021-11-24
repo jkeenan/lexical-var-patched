@@ -6,9 +6,9 @@ META.json
 META.yml
 Makefile.PL
 README
-lib/Lexical/Sub.pm
-lib/Lexical/Var.pm
-lib/Lexical/Var.xs
+lib/Lexical/Sub/Patched.pm
+lib/Lexical/Var/Patched.pm
+lib/Lexical/Var/Patched.xs
 t/array_ident.t
 t/array_ops.t
 t/array_scope.t

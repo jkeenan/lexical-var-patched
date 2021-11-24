@@ -7,7 +7,7 @@ BEGIN { $SIG{__WARN__} = sub { die "WARNING: $_[0]" }; }
 
 my($x, $y);
 our @wibble;
-use Lexical::Var '*foo' => \*main::wibble;
+use Lexical::Var::Patched '*foo' => \*main::wibble;
 ok *foo{SCALAR} != \$x;
 ok *foo{SCALAR} != \$y;
 *foo = \$x;

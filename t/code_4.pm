@@ -1,3 +1,3 @@
-no Lexical::Var '&foo';
+no Lexical::Var::Patched '&foo';
 push @main::values, &foo;
 1;
