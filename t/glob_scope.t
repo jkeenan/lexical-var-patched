@@ -27,7 +27,7 @@ is_deeply \@values, [ undef ];
 
 @values = ();
 eval q{
-	use Lexical::Var '*foo' => \*one;
+	use Lexical::Var::Patched '*foo' => \*one;
 	push @values, ${*foo{SCALAR}};
 };
 is $@, "";
@@ -35,8 +35,8 @@ is_deeply \@values, [ 1 ];
 
 @values = ();
 eval q{
-	use Lexical::Var '*foo' => \*one;
-	use Lexical::Var '*foo' => \*two;
+	use Lexical::Var::Patched '*foo' => \*one;
+	use Lexical::Var::Patched '*foo' => \*two;
 	push @values, ${*foo{SCALAR}};
 };
 is $@, "";
@@ -44,7 +44,7 @@ is_deeply \@values, [ 2 ];
 
 @values = ();
 eval q{
-	use Lexical::Var '*foo' => \*one;
+	use Lexical::Var::Patched '*foo' => \*one;
 	{
 		push @values, ${*foo{SCALAR}};
 	}
@@ -54,7 +54,7 @@ is_deeply \@values, [ 1 ];
 
 @values = ();
 eval q{
-	use Lexical::Var '*foo' => \*one;
+	use Lexical::Var::Patched '*foo' => \*one;
 	{ ; }
 	push @values, ${*foo{SCALAR}};
 };
@@ -64,7 +64,7 @@ is_deeply \@values, [ 1 ];
 @values = ();
 eval q{
 	{
-		use Lexical::Var '*foo' => \*one;
+		use Lexical::Var::Patched '*foo' => \*one;
 	}
 	push @values, ${*foo{SCALAR}};
 };
@@ -73,9 +73,9 @@ is_deeply \@values, [ undef ];
 
 @values = ();
 eval q{
-	use Lexical::Var '*foo' => \*one;
+	use Lexical::Var::Patched '*foo' => \*one;
 	{
-		use Lexical::Var '*foo' => \*two;
+		use Lexical::Var::Patched '*foo' => \*two;
 		push @values, ${*foo{SCALAR}};
 	}
 };
@@ -84,9 +84,9 @@ is_deeply \@values, [ 2 ];
 
 @values = ();
 eval q{
-	use Lexical::Var '*foo' => \*one;
+	use Lexical::Var::Patched '*foo' => \*one;
 	{
-		use Lexical::Var '*foo' => \*two;
+		use Lexical::Var::Patched '*foo' => \*two;
 	}
 	push @values, ${*foo{SCALAR}};
 };
@@ -95,9 +95,9 @@ is_deeply \@values, [ 1 ];
 
 @values = ();
 eval q{
-	use Lexical::Var '*foo' => \*one;
+	use Lexical::Var::Patched '*foo' => \*one;
 	{
-		use Lexical::Var '*foo' => \*two;
+		use Lexical::Var::Patched '*foo' => \*two;
 		push @values, ${*foo{SCALAR}};
 	}
 	push @values, ${*foo{SCALAR}};

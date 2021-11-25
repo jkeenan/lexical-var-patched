@@ -1,15 +1,15 @@
 =head1 NAME
 
-Lexical::Var - static variables without namespace pollution
+Lexical::Var::Patched - static variables without namespace pollution
 
 =head1 SYNOPSIS
 
-	use Lexical::Var '$foo' => \$Remote::foo;
-	use Lexical::Var '$const' => \123;
-	use Lexical::Var '@bar' => [];
-	use Lexical::Var '%baz' => { a => 1, b => 2 };
-	use Lexical::Var '&quux' => sub { $_[0] + 1 };
-	use Lexical::Var '*wibble' => Symbol::gensym();
+	use Lexical::Var::Patched '$foo' => \$Remote::foo;
+	use Lexical::Var::Patched '$const' => \123;
+	use Lexical::Var::Patched '@bar' => [];
+	use Lexical::Var::Patched '%baz' => { a => 1, b => 2 };
+	use Lexical::Var::Patched '&quux' => sub { $_[0] + 1 };
+	use Lexical::Var::Patched '*wibble' => Symbol::gensym();
 
 =head1 DESCRIPTION
 
@@ -21,7 +21,7 @@ This module influences the meaning of single-part variable names that
 appear directly in code, such as "C<$foo>".  Normally, in the absence
 of any particular declaration, or under the effect of an C<our>
 declaration, this would refer to the scalar variable of that name
-located in the current package.  A C<Lexical::Var> declaration can
+located in the current package.  A C<Lexical::Var::Patched> declaration can
 change this to refer to any particular scalar, bypassing the package
 system entirely.  A variable name that includes an explicit package part,
 such as "C<$main::foo>", always refers to the variable in the specified
@@ -48,7 +48,7 @@ A name definition supplied by this module takes effect from the end of the
 definition statement up to the end of the immediately enclosing block,
 except where it is shadowed within a nested block.  This is the same
 lexical scoping that the C<my>, C<our>, and C<state> keywords supply.
-Definitions from L<Lexical::Var> and from C<my>/C<our>/C<state> can shadow
+Definitions from L<Lexical::Var::Patched> and from C<my>/C<our>/C<state> can shadow
 each other.  These lexical definitions propagate into string C<eval>s,
 on Perl versions that support it (5.9.3 and later).
 
@@ -58,25 +58,25 @@ variable for each invocation of a function, use C<my>.
 
 =cut
 
-package Lexical::Var;
+package Lexical::Var::Patched;
 
 { use 5.006; }
 use Lexical::SealRequireHints 0.006;
 use warnings;
 use strict;
 
-our $VERSION = "0.009";
+our $VERSION = "0.010";
 
 require XSLoader;
 XSLoader::load(__PACKAGE__, $VERSION);
 
 =head1 PACKAGE METHODS
 
-These methods are meant to be invoked on the C<Lexical::Var> package.
+These methods are meant to be invoked on the C<Lexical::Var::Patched> package.
 
 =over
 
-=item Lexical::Var->import(NAME => REF, ...)
+=item Lexical::Var::Patched->import(NAME => REF, ...)
 
 Sets up lexical variable declarations, in the lexical environment that
 is currently compiling.  Each I<NAME> must be a variable name (e.g.,
@@ -88,7 +88,7 @@ L<Scalar::Construct> can be helpful in generating appropriate I<REF>s,
 especially to create constants.  There are Perl core bugs to beware of
 around compile-time constants; see L</BUGS>.
 
-=item Lexical::Var->unimport(NAME [=> REF], ...)
+=item Lexical::Var::Patched->unimport(NAME [=> REF], ...)
 
 Sets up negative lexical variable declarations, in the lexical environment
 that is currently compiling.  Each I<NAME> must be a variable name
@@ -137,14 +137,14 @@ initially have the correct value, but they can be writable even though the
 original object is a constant.  See Perl bug reports [perl #109744] and
 [perl #109746].  This can affect objects that are placed in the lexical
 namespace, just as it can affect those in package namespaces or elsewhere.
-C<Lexical::Var> avoids contributing to the problem itself, but certain
-ways of building the parameters to C<Lexical::Var> can result in the
+C<Lexical::Var::Patched> avoids contributing to the problem itself, but certain
+ways of building the parameters to C<Lexical::Var::Patched> can result in the
 object in the lexical namespace not being the one that was intended,
 or can damage the named object so that later referencing operations on
 it misbehave.  L<Scalar::Construct> can be used to avoid this problem.
 
 Bogus redefinition warnings occur in some cases when C<our> declarations
-and C<Lexical::Var> declarations shadow each other.
+and C<Lexical::Var::Patched> declarations shadow each other.
 
 Package hash entries get created for subroutine and glob names that
 are used, even though the subroutines and globs are not actually being
@@ -165,7 +165,7 @@ cause this problem.
 
 L<Attribute::Lexical>,
 L<Lexical::Import>,
-L<Lexical::Sub>,
+L<Lexical::Sub::Patched>,
 L<Scalar::Construct>
 
 =head1 AUTHOR

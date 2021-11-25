@@ -9,5 +9,5 @@
 /Makefile.PL
 /SIGNATURE
 /Lexical-Var-*
-/lib/Lexical/Var.c
-/lib/Lexical/Var.o
+/lib/Lexical/Var/*.c
+/lib/Lexical/Var/*.o

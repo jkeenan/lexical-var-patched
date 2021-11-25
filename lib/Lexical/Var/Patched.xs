@@ -62,7 +62,12 @@ typedef AV PAD;
 #endif /* !COP_SEQ_RANGE_LOW */
 
 #ifndef COP_SEQ_RANGE_LOW_set
-# if PERL_VERSION_GE(5,9,5)
+# ifdef newPADNAMEpvn
+#  define COP_SEQ_RANGE_LOW_set(sv,val) \
+	do { (sv)->xpadn_low = (val); } while(0)
+#  define COP_SEQ_RANGE_HIGH_set(sv,val) \
+	do { (sv)->xpadn_high = (val); } while(0)
+# elif PERL_VERSION_GE(5,9,5)
 #  define COP_SEQ_RANGE_LOW_set(sv,val) \
 	do { ((XPVNV*)SvANY(sv))->xnv_u.xpad_cop_seq.xlow = val; } while(0)
 #  define COP_SEQ_RANGE_HIGH_set(sv,val) \
@@ -95,6 +100,12 @@ static SV *THX_newSV_type(pTHX_ svtype type)
 # define GV_NOTQUAL 0
 #endif /* !GV_NOTQUAL */
 
+#ifndef padnamelist_store
+ /* Note that the return values are different.  If we ever call it in non-
+    void context, we would have to change it to *av_store.  */
+# define padnamelist_store av_store
+#endif
+
 /*
  * scalar classification
  *
@@ -119,7 +130,7 @@ static SV *THX_newSV_type(pTHX_ svtype type)
  * This function generate op that evaluates to a fixed object identity
  * and can also participate in constant folding.
  *
- * Lexical::Var generally needs to make ops that evaluate to fixed
+ * Lexical::Var::Patched generally needs to make ops that evaluate to fixed
  * identities, that being what a name that it handles represents.
  * Normally it can do this by means of an rv2xv op applied to a const op,
  * where the const op holds an RV that references the object of interest.
@@ -178,10 +189,10 @@ static OP *THX_gen_const_identity_op(pTHX_ SV *sv)
  * %^H key names
  */
 
-#define KEYPREFIX "Lexical::Var/"
+#define KEYPREFIX "Lexical::Var::Patched/"
 #define KEYPREFIXLEN (sizeof(KEYPREFIX)-1)
 
-#define LEXPADPREFIX "Lexical::Var::<LEX>"
+#define LEXPADPREFIX "Lexical::Var::Patched::<LEX>"
 #define LEXPADPREFIXLEN (sizeof(LEXPADPREFIX)-1)
 
 #define CHAR_IDSTART 0x01
@@ -322,7 +333,7 @@ static OP *THX_ck_rv2xv(pTHX_ OP *o, char sigil, OP *(*nxck)(pTHX_ OP *o))
 			 */
 			hintref = HeVAL(he);
 			if(!SvROK(hintref))
-				croak("non-reference hint for Lexical::Var");
+				croak("non-reference hint for Lexical::Var::Patched");
 			referent = SvREFCNT_inc(SvRV(hintref));
 			type = o->op_type;
 			flags = o->op_flags | (((U16)o->op_private) << 8);
@@ -460,13 +471,18 @@ static void THX_setup_pad(pTHX_ CV *compcv, char const *name)
 	PADNAMELIST *padname = PadlistNAMES(padlist);
 	PAD *padvar = PadlistARRAY(padlist)[1];
 	PADOFFSET ouroffset;
-	SV *ourname, *ourvar;
+	PADNAME *ourname;
+	SV *ourvar;
 	HV *stash;
 	ourvar = *av_fetch(padvar, PadMAX(padvar) + 1, 1);
 	SvPADMY_on(ourvar);
 	ouroffset = PadMAX(padvar);
+#ifdef newPADNAMEpvn
+	ourname = newPADNAMEpvn(name, strlen(name));
+#else
 	ourname = newSV_type(SVt_PADNAME);
 	sv_setpv(ourname, name);
+#endif
 	SvPAD_OUR_on(ourname);
 	stash = name[0] == '$' ? stash_lex_sv :
 		name[0] == '@' ? stash_lex_av : stash_lex_hv;
@@ -474,7 +490,7 @@ static void THX_setup_pad(pTHX_ CV *compcv, char const *name)
 	COP_SEQ_RANGE_LOW_set(ourname, PL_cop_seqmax);
 	COP_SEQ_RANGE_HIGH_set(ourname, pad_max());
 	PL_cop_seqmax++;
-	av_store(padname, ouroffset, ourname);
+	padnamelist_store(padname, ouroffset, ourname);
 #ifdef PadnamelistMAXNAMED
 	PadnamelistMAXNAMED(padname) = ouroffset;
 #endif /* PadnamelistMAXNAMED */
@@ -603,7 +619,7 @@ static void THX_unimport(pTHX_ char base_sigil, char const *vari_word)
 	}
 }
 
-MODULE = Lexical::Var PACKAGE = Lexical::Var
+MODULE = Lexical::Var::Patched PACKAGE = Lexical::Var::Patched
 
 PROTOTYPES: DISABLE
 
@@ -646,7 +662,7 @@ PPCODE:
 	unimport('N', "variable");
 	SPAGAIN;
 
-MODULE = Lexical::Var PACKAGE = Lexical::Sub
+MODULE = Lexical::Var::Patched PACKAGE = Lexical::Sub::Patched
 
 SV *
 _sub_for_compilation(SV *classname, SV *name)

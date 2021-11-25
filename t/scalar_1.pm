@@ -1,3 +1,3 @@
 use strict;
-use Lexical::Var '$foo' => \(my$x=2);
+use Lexical::Var::Patched '$foo' => \(my$x=2);
 1;
